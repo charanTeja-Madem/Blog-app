@@ -2,7 +2,7 @@ import axios from "axios";
 import {create} from 'zustand'
 import API_BASE_URL from '../src/config/api'
 
-export const useAuth= create((set)=>{
+export const useAuth= create((set)=>({
     currentuser:null,
     loading:false,
     error:null,
