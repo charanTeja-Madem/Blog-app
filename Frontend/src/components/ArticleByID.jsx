@@ -37,7 +37,7 @@ function ArticleByID() {
       setLoading(true);
 
       try {
-        const res = await axios.get(`http://localhost:4000/user-api/article/${id}`, { withCredentials: true });
+        const res = await axios.get(`${API_BASE_URL}/user-api/article/${id}`, { withCredentials: true });
 
         setArticle(res.data.payload);
       } catch (err) {
@@ -61,7 +61,7 @@ function ArticleByID() {
   // delete article
   const deleteArticle = async () => {
     try {
-      await axios.delete(`http://localhost:4000/author-api/article/${id}`, { withCredentials: true });
+      await axios.delete(`${API_BASE_URL}/author-api/article/${id}`, { withCredentials: true });
 
       navigate("/author-profile");
     } catch (err) {

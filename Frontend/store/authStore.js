@@ -1,7 +1,8 @@
 import axios from "axios";
 import {create} from 'zustand'
+import API_BASE_URL from '../src/config/api'
 
-export const useAuth= create((set)=>({
+export const useAuth= create((set)=>{
     currentuser:null,
     loading:false,
     error:null,
@@ -10,7 +11,7 @@ export const useAuth= create((set)=>({
         const {_,...userCred}=userCredWithRole
         try {
             set({loading:true,error:null});
-            let res=await axios.post('http://localhost:4000/common-api/login',
+            let res=await axios.post(`${API_BASE_URL}/common-api/login`,
                 userCred, 
                 {withCredentials:true}) 
             
@@ -28,7 +29,7 @@ export const useAuth= create((set)=>({
     logout:async()=>{
         try{
             set({loading:true,error:null})
-            await axios.get('http://localhost:4000/common-api/logout',{withCredentials:true})
+            await axios.get(`${API_BASE_URL}/common-api/logout`,{withCredentials:true})
             set({
                 loading:false,
                 isAuthenticated:false,
@@ -48,7 +49,7 @@ export const useAuth= create((set)=>({
     checkSession: async () => {
         try {
             set({ loading: true });
-            const res = await axios.get('http://localhost:4000/common-api/user', { withCredentials: true });
+            const res = await axios.get(`${API_BASE_URL}/common-api/user`, { withCredentials: true });
             
             const user = res.data.payload;
             // Normalize ID: JWT payload uses userId, Mongoose uses _id

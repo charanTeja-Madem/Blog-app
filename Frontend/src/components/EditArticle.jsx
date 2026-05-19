@@ -38,7 +38,7 @@ function EditArticle() {
 
     const fetchArticle = async () => {
       try {
-        const res = await axios.get(`http://localhost:4000/user-api/article/${id}`, { withCredentials: true });
+        const res = await axios.get(`${API_BASE_URL}/user-api/article/${id}`, { withCredentials: true });
         setArticle(res.data.payload);
       } catch {
         toast.error("Failed to load article data");
@@ -67,7 +67,7 @@ function EditArticle() {
       setLoading(true);
       const authorId = currentuser._id || currentuser.userId;
       const res = await axios.put(
-        `http://localhost:4000/author-api/articles/${article._id}/${authorId}`,
+        `${API_BASE_URL}/author-api/articles/${article._id}/${authorId}`,
         data,
         { withCredentials: true }
       );

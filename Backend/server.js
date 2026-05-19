@@ -11,8 +11,19 @@ import cors from 'cors'
 config()
 const app = exp()
 //use cors middleware
+const allowedOrigins = [
+    'http://localhost:5173', // Local development
+    'https://blog-app-phi-virid.vercel.app' // Production Vercel frontend
+]
+
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
     credentials: true, // required to allow cookies to be sent/received cross-origin
 }))
 //add body parser middleware

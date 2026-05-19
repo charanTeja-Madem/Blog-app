@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../config/api";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../store/authStore";
 import {
@@ -44,7 +45,7 @@ function AuthorArticles() {
         setError(null);
         const authorId = currentuser._id || currentuser.userId;
         const res = await axios.get(
-          `http://localhost:4000/author-api/articles/${authorId}`,
+          `${API_BASE_URL}/author-api/articles/${authorId}`,
           { withCredentials: true }
         );
         setArticles(res.data.articles || []);

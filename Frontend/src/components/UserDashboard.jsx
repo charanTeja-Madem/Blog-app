@@ -19,6 +19,7 @@ import {
   bodyText
 } from '../styles/common'
 import axios from 'axios'
+import API_BASE_URL from '../config/api'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../../store/authStore'
 
@@ -46,7 +47,7 @@ function UserDashboard() {
       try {
         setLoading(true)
         setError(null)
-        const res = await axios.get('http://localhost:4000/user-api/articles', {
+        const res = await axios.get(`${API_BASE_URL}/user-api/articles`, {
           withCredentials: true,
         })
         setArticles(res.data.articles || [])

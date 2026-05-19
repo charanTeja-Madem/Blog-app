@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import axios from 'axios'
+import API_BASE_URL from '../config/api'
 import { useNavigate } from 'react-router'
 import {
   pageBackground,
@@ -38,7 +39,7 @@ function Register() {
         if (profileImageUrl && profileImageUrl[0]) {
           formData.append("profileImageUrl", profileImageUrl[0]);
         }
-        let res = await axios.post('http://localhost:4000/user-api/users', formData)
+        let res = await axios.post(`${API_BASE_URL}/user-api/users`, formData)
         if (res.status === 201) {
           navigate('/login')
         }
@@ -46,7 +47,7 @@ function Register() {
       if (data.role === 'author') {
         // Send as JSON for author
         let { role, profileImageUrl, ...userObj } = data;
-        let res = await axios.post('http://localhost:4000/author-api/users', userObj)
+        let res = await axios.post(`${API_BASE_URL}/author-api/users`, userObj)
         if (res.status === 201) {
           setError(null)
           navigate('/login')
