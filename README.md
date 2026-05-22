@@ -46,7 +46,7 @@ Powered by Zustand featuring persisted frontend authentication state.
 Clone the project and navigate into it:
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/charanTeja-Madem/Blog-app
 cd BLOG-APP
 ```
 
@@ -82,9 +82,9 @@ npm run dev
 npm install
 
 # Create .env with these variables:
-# DB_URL=your_mongodb_url
+# DB_URL
 # PORT=4000
-# JWT_SECRET=your_secret_key
+# JWT_SECRET
 # CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
 
 npm start
@@ -137,5 +137,3 @@ Frontend auto-deploys to Vercel, Backend auto-deploys to Render.
 - GitHub: [@charanTeja-Madem](https://github.com/charanTeja-Madem)
 
 ---
-
-**Happy blogging!** ✍️
