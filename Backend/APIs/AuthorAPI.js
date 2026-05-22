@@ -24,7 +24,7 @@ AuthorRouter.post('/login',async(req,res)=>{
         //authenticate user
         let {user,token}=await authenticateUser({...userObj,role:'AUTHOR'})
         //save token in cookie
-        res.cookie('token',token,{httpOnly:true,sameSite:'lax',secure:false})
+        res.cookie('token',token,{httpOnly:true,sameSite:'none',secure:true})
         //send response
         res.status(200).json({message:"User authenticated",user})
     }catch(err){

@@ -15,7 +15,7 @@ commonRouter.post('/login',async(req,res)=>{
         //authenticate user
         const {user,token}=await authenticateUser({...userObj,role})
         //save token in cookie
-        res.cookie('token',token,{httpOnly:true,sameSite:'lax',secure:false})
+        res.cookie('token',token,{httpOnly:true,sameSite:'none',secure:true})
         //send response
         res.status(200).json({message:"User authenticated",payload:user})
     } catch(err) {
@@ -27,8 +27,8 @@ commonRouter.get('/logout',(req,res)=>{
     //clear the cookie named 'token'
     res.clearCookie('token',{
         httpOnly:true,//must match original set settings
-        sameSite:'lax',//must match original set settings
-        secure:false//must match original set settings
+        sameSite:'none',//must match original set settings
+        secure:true//must match original set settings
     })
     res.json({message:"Logged out successfully"})
 })

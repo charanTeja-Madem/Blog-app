@@ -25,6 +25,8 @@ app.use(cors({
         }
     },
     credentials: true, // required to allow cookies to be sent/received cross-origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 //add body parser middleware
 app.use(exp.json())//to parse the incoming requests with JSON payloads
