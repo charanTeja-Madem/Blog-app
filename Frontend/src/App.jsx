@@ -79,8 +79,9 @@ function App() {
               element: <div>Authors List Component</div>
             }
           ]
-        },{
-          path:'/article/:id',
+        },{          path:'/articles',
+          element:<Articles/>
+        },{          path:'/article/:id',
           element:<ArticleByID/>
         },{
           path:'/edit-article/:id',
