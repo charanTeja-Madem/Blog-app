@@ -4,7 +4,10 @@ import { Navigate } from 'react-router'
 
 function ProtectedRoute({ children, role }) {
     // get user login status from store
-    const { currentuser, loading, isAuthenticated, logout } = useAuth();
+    const currentuser = useAuth((state) => state.currentuser);
+    const loading = useAuth((state) => state.loading);
+    const isAuthenticated = useAuth((state) => state.isAuthenticated);
+    const logout = useAuth((state) => state.logout);
 
     if (loading) {
         return <div>Loading...</div>

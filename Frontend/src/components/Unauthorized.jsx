@@ -5,14 +5,13 @@ const Unauthorized = ({ redirectTo = "/login", delay = 5000 }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate(finalRedirectTo, { replace: true });
-    }, finalDelay);
+      navigate(redirectTo, { replace: true });
+    }, delay);
 
     return () => clearTimeout(timer);
-  }, [navigate, finalRedirectTo, finalDelay]);
+  }, [navigate, redirectTo, delay]);
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100">

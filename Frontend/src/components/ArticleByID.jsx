@@ -2,6 +2,7 @@ import { useParams, useLocation, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../store/authStore";
+import API_BASE_URL from "../config/api";
 
 import {
   pageBackground,

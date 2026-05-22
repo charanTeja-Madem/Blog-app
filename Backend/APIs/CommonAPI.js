@@ -40,16 +40,16 @@ commonRouter.put('/change-password', verifyToken('USER', 'AUTHOR', 'ADMIN'), asy
    const user=await UserTypeModel.findOne({email})
    if(!user)
    {
-    return res.status(200).json({message:"user not exists"});
+    return res.status(404).json({message:"user not found"});
    }
    const isMatch=await bcrypt.compare(currentPassword,user.password)
    if(!isMatch)
    {
-    return res.status(200).json({message:"password not match"});
+    return res.status(401).json({message:"password incorrect"});
    }
    if(currentPassword===newPassword)
    {
-    return res.status(200).json({message:"new password should be different from current password"});
+    return res.status(400).json({message:"new password should be different from current password"});
    }
    //replace current password with new password
    user.password=await bcrypt.hash(newPassword,10)

@@ -4,7 +4,6 @@ import {config} from "dotenv"
 import UserRouter from './APIs/UserAPI.js'
 import AuthorRouter from './APIs/AuthorAPI.js'
 import AdminRouter from  './APIs/AdminAPI.js'
-import mongoose, { mongo } from "mongoose"
 import cookieParser from "cookie-parser"  
 import commonRouter from './APIs/CommonAPI.js' 
 import cors from 'cors' 
@@ -32,6 +31,15 @@ app.use(cors({
 app.use(exp.json())//to parse the incoming requests with JSON payloads
 //cookie parser middleware
 app.use(cookieParser())
+
+//Validate environment variables
+const requiredEnvVars = ['DB_URL', 'PORT', 'JWT_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+if (missingEnvVars.length > 0) {
+  console.error(`ERROR: Missing required environment variables: ${missingEnvVars.join(', ')}`);
+  process.exit(1);
+}
+
 //connect to DB
 const connectDB=async()=>{
    try{ await connect(process.env.DB_URL)//process.env is used to access the environment variables

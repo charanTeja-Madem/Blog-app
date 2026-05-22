@@ -1,6 +1,7 @@
 import ex from 'express'
 import Articles from '../Models/ArticleModel.js'
 import UserTypeModel from '../Models/UserModel.js'
+import { verifyToken } from '../Middlewares/verifyToken.js'
 const AdminRouter=ex.Router()
 //authenticate admin
 //read all articles(optional)
@@ -13,24 +14,24 @@ const AdminRouter=ex.Router()
 //     res.status(200).json({message:"articles are",payload:articles});
 // })
 //block users
-AdminRouter.put('/block/:id',async(req,res)=>{
+AdminRouter.put('/block/:id', verifyToken('ADMIN'), async(req,res)=>{
     let id=req.params.id
     let user=await UserTypeModel.findById(id)
     if(!user)
     {
-        return res.status(200).json({message:"user not exists"});
+        return res.status(404).json({message:"user not found"});
     }
     user.isActive=false
     await user.save()
     res.status(200).json({message:"user blocked",user});
 })
 //unblock users
-AdminRouter.put('/unblock/:id',async(req,res)=>{
+AdminRouter.put('/unblock/:id', verifyToken('ADMIN'), async(req,res)=>{
     let id=req.params.id
     let user=await UserTypeModel.findById(id)
     if(!user)
     {
-        return res.status(200).json({message:"user not exists"});
+        return res.status(404).json({message:"user not found"});
     }
     user.isActive=true
     await user.save()
