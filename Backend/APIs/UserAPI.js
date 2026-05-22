@@ -48,41 +48,55 @@ UserRouter.post(
         );
 //Autheticate user
 
-//read all articles(protected route)
-UserRouter.get('/articles',verifyToken('USER'),async(req,res)=>{
-    let articles = await ArticleTypeModel.find().populate("author","firstName lastName")
-    res.status(200).json({message:"Articles",articles})
+//read all articles (public route - no auth required)
+UserRouter.get('/articles', async(req,res)=>{
+    try {
+        let articles = await ArticleTypeModel.find({isArticleActive: true}).populate("author","firstName lastName")
+        res.status(200).json({message:"Articles",articles})
+    } catch(err) {
+        res.status(500).json({message:"Error fetching articles"})
+    }
 })
 //Add comment to an article(protected route)
-UserRouter.put('/articles',verifyToken('USER'),async(req,res)=>{
-    const {user,comment,articleId}=req.body
-    //check user(req.user)
-    if(user!==req.user.userId)
-    {
-        return res.status(403).json({message:"Forbidden"})
+UserRouter.put('/article/:id/comment', verifyToken('USER'), async(req,res)=>{
+    const {comment} = req.body
+    const {id} = req.params
+    const userId = req.user.userId || req.user._id
+    
+    try {
+        //find article by id and update
+        let articleWithComment = await ArticleTypeModel.findOneAndUpdate(
+            {
+                _id: id,
+                isArticleActive: true
+            },
+            {$push: {comments: {user: userId, comment}}},
+            {new: true, runValidators: true}
+        ).populate("comments.user", "firstName lastName")
+        
+        if(!articleWithComment){
+            return res.status(404).json({message:"Article not found"})
+        }
+        
+        res.status(201).json({message:"Comment added", payload: articleWithComment})
+    } catch(err) {
+        res.status(400).json({message: err.message || "Error adding comment"})
     }
-
-    //find arcticle by id and update
-    let articleWithComment=await ArticleTypeModel.findOneAndUpdate({
-        _id:articleId,
-        isArticleActive:true
-    },
-    {$push:{comments:{user,comment}}}
-    ,{new:true,runValidators:true})
-    if(!articleWithComment){
-        return res.status(404).json({message:"Article not found"})
-    }
-    await articleWithComment.save()
-    res.status(201).json({message:"Comment added",articleWithComment})
 })
-//read single article by id
-UserRouter.get('/article/:id',verifyToken('USER'),async(req,res)=>{
-    const {id}=req.params
-    let article=await ArticleTypeModel.findById(id).populate("author","firstName lastName")
-    if(!article){
-        return res.status(404).json({message:"Article not found"})
+//read single article by id (public route - no auth required)
+UserRouter.get('/article/:id', async(req,res)=>{
+    const {id} = req.params
+    try {
+        let article = await ArticleTypeModel.findById(id)
+            .populate("author","firstName lastName")
+            .populate("comments.user", "firstName lastName")
+        if(!article){
+            return res.status(404).json({message:"Article not found"})
+        }
+        res.status(200).json({message:"Article", payload: article})
+    } catch(err) {
+        res.status(500).json({message: "Error fetching article"})
     }
-    res.status(200).json({message:"Article",payload:article})
 })
 
 export default UserRouter

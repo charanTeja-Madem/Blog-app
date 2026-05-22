@@ -42,12 +42,12 @@ function Articles() {
       try {
         setLoading(true)
         setError(null)
-        const res = await axios.get(`${API_BASE_URL}/user-api/articles`, {
-          withCredentials: true,
-        })
+        // Try fetching articles - endpoint is now public
+        const res = await axios.get(`${API_BASE_URL}/user-api/articles`)
         setArticles(res.data.articles || [])
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to load articles.')
+        console.error('Error fetching articles:', err)
       } finally {
         setLoading(false)
       }

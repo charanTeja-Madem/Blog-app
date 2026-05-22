@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../store/authStore";
 import API_BASE_URL from "../config/api";
+import { toast } from "react-hot-toast";
 
 import {
   pageBackground,
@@ -26,10 +27,13 @@ function ArticleByID() {
   const navigate = useNavigate();
 
   const user = useAuth((state) => state.currentuser);
+  const isAuthenticated = useAuth((state) => state.isAuthenticated);
 
   const [article, setArticle] = useState(location.state || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [newComment, setNewComment] = useState("");
+  const [submittingComment, setSubmittingComment] = useState(false);
 
   useEffect(() => {
     if (article) return;
@@ -38,11 +42,17 @@ function ArticleByID() {
       setLoading(true);
 
       try {
-        const res = await axios.get(`${API_BASE_URL}/user-api/article/${id}`, { withCredentials: true });
+        // Try with auth first, fallback to public
+        const res = await axios.get(`${API_BASE_URL}/user-api/article/${id}`, { 
+          withCredentials: true 
+        }).catch(() => 
+          // Fallback to public endpoint if auth fails
+          axios.get(`${API_BASE_URL}/user-api/article/${id}`)
+        );
 
         setArticle(res.data.payload);
       } catch (err) {
-        setError(err.response?.data?.error);
+        setError(err.response?.data?.message || "Error loading article");
       } finally {
         setLoading(false);
       }
@@ -72,6 +82,38 @@ function ArticleByID() {
 
   const editArticle = (articleObj) => {
     navigate(`/edit-article/${articleObj._id}`, { state: articleObj });
+  };
+
+  const handleAddComment = async (e) => {
+    e.preventDefault();
+    
+    if (!isAuthenticated) {
+      toast.error("Please log in to add a comment");
+      navigate("/login");
+      return;
+    }
+
+    if (!newComment.trim()) {
+      toast.error("Comment cannot be empty");
+      return;
+    }
+
+    setSubmittingComment(true);
+    try {
+      const res = await axios.put(
+        `${API_BASE_URL}/user-api/article/${id}/comment`,
+        { comment: newComment },
+        { withCredentials: true }
+      );
+
+      setArticle(res.data.payload);
+      setNewComment("");
+      toast.success("Comment added successfully!");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error adding comment");
+    } finally {
+      setSubmittingComment(false);
+    }
   };
 
   if (loading) return <p className={loadingClass}>Loading article...</p>;
@@ -146,6 +188,63 @@ function ArticleByID() {
             </button>
           </div>
         )}
+
+        {/* Comments Section */}
+        <div className="mt-16 pt-8 border-t border-[#ddd7ce]">
+          <h2 className="text-2xl font-bold text-[#1a1410] mb-8">Comments ({article.comments?.length || 0})</h2>
+
+          {/* Add Comment Form */}
+          {isAuthenticated ? (
+            <form onSubmit={handleAddComment} className="mb-12 p-6 bg-[#f5f1eb] rounded-lg">
+              <h3 className="text-lg font-semibold text-[#1a1410] mb-4">Add Your Comment</h3>
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Share your thoughts on this article..."
+                className="w-full p-3 border border-[#ddd7ce] rounded-lg font-serif text-[#1a1410] placeholder-[#7a6f68] focus:outline-none focus:ring-2 focus:ring-[#c0392b] resize-none"
+                rows="4"
+                disabled={submittingComment}
+              />
+              <button
+                type="submit"
+                disabled={submittingComment || !newComment.trim()}
+                className="mt-4 px-6 py-2 bg-[#c0392b] text-white rounded-lg hover:bg-[#922b21] disabled:bg-gray-400 transition-colors font-semibold"
+              >
+                {submittingComment ? "Posting..." : "Post Comment"}
+              </button>
+            </form>
+          ) : (
+            <div className="mb-12 p-6 bg-[#f5f1eb] rounded-lg text-center">
+              <p className={`${bodyText} mb-4`}>Please log in to add a comment</p>
+              <button
+                onClick={() => navigate("/login")}
+                className="px-6 py-2 bg-[#c0392b] text-white rounded-lg hover:bg-[#922b21] transition-colors font-semibold"
+              >
+                Log In
+              </button>
+            </div>
+          )}
+
+          {/* Comments List */}
+          {article.comments && article.comments.length > 0 ? (
+            <div className="space-y-6">
+              {article.comments.map((comment, idx) => (
+                <div key={idx} className="p-6 bg-[#ede8df] rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-semibold text-[#1a1410]">
+                      {comment.user?.firstName} {comment.user?.lastName}
+                    </span>
+                  </div>
+                  <p className={`${bodyText} text-[#3a3530]`}>{comment.comment}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className={`${bodyText} text-[#7a6f68] text-center py-8`}>
+              No comments yet. Be the first to share your thoughts!
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
