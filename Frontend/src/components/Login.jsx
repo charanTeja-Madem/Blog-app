@@ -69,24 +69,7 @@ useEffect(()=>{
         {/* Loading */}
         {loading && <p className={loadingClass}>Signing in…</p>}
 
-        <form onSubmit={handleSubmit(onUserLogin)} className="flex flex-col gap-1">
-
-          {/* Role selection */}
-          <div className={formGroup}>
-            <p className={labelClass}>Select Role</p>
-            <div className="flex gap-4 mt-1">
-              <label className={`${bodyText} flex items-center gap-2 cursor-pointer`}>
-                <input type="radio" {...register('role')} value="user" defaultChecked /> User
-              </label>
-              <label className={`${bodyText} flex items-center gap-2 cursor-pointer`}>
-                <input type="radio" {...register('role')} value="author" /> Author
-              </label>
-              <label className={`${bodyText} flex items-center gap-2 cursor-pointer`}>
-                <input type="radio" {...register('role')} value="admin" /> Admin
-              </label>
-            </div>
-          </div>
-
+        <form onSubmit={handleSubmit((data) => onUserLogin({...data, role: 'user'}))} className="flex flex-col gap-1">
 
           {/* Email */}
           <div className={formGroup}>
